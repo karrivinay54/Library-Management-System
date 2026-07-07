@@ -79,6 +79,9 @@ void writeToFile(ofstream &file)
 // Load book from file
 void loadFromString(const string &line)
 {
+    if (line.empty())
+        return;
+
     stringstream ss(line);
     string temp;
 
@@ -113,6 +116,75 @@ string getAuthor() const
 
 };
 
+class Member
+{
+private:
+    int memberID;
+    string name;
+    string phone;
+
+public:
+
+    Member()
+    {
+        memberID = 0;
+        name = "";
+        phone = "";
+    }
+
+    void inputMember()
+    {
+        cout << "\n========== ADD MEMBER ==========\n";
+
+        cout << "Enter Member ID : ";
+        cin >> memberID;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        cout << "Enter Member Name : ";
+        getline(cin, name);
+
+        cout << "Enter Phone Number : ";
+        getline(cin, phone);
+    }
+
+    void displayMember() const
+    {
+        cout << "\n----------------------------------------\n";
+        cout << "Member ID    : " << memberID << endl;
+        cout << "Name         : " << name << endl;
+        cout << "Phone Number : " << phone << endl;
+        cout << "----------------------------------------\n";
+    }
+
+    void writeToFile(ofstream &file)
+    {
+        file << memberID << "|"
+             << name << "|"
+             << phone << endl;
+    }
+
+    void loadFromString(const string &line)
+    {
+        if (line.empty())
+    return;
+        stringstream ss(line);
+        string temp;
+
+        getline(ss, temp, '|');
+        memberID = stoi(temp);
+
+        getline(ss, name, '|');
+
+        getline(ss, phone);
+    }
+
+    int getMemberID() const
+    {
+        return memberID;
+    }
+};
+
 vector<Book> loadBooks()
 {
     vector<Book> books;
@@ -121,12 +193,15 @@ vector<Book> loadBooks()
 
     string line;
 
-    while (getline(file, line))
-    {
-        Book book;
-        book.loadFromString(line);
-        books.push_back(book);
-    }
+   while (getline(file, line))
+{
+    if (line.empty())
+        continue;
+
+    Book book;
+    book.loadFromString(line);
+    books.push_back(book);
+}
 
     file.close();
 
@@ -135,9 +210,21 @@ vector<Book> loadBooks()
 
 void addBook()
 {
-    Book book;
+    vector<Book> books = loadBooks();
 
-    book.inputBook();
+    Book newBook;
+
+    newBook.inputBook();
+
+    // Check for duplicate Book ID
+    for (const auto &book : books)
+    {
+        if (book.getBookID() == newBook.getBookID())
+        {
+            cout << "\nBook ID already exists!\n";
+            return;
+        }
+    }
 
     ofstream file("books.txt", ios::app);
 
@@ -147,7 +234,7 @@ void addBook()
         return;
     }
 
-    book.writeToFile(file);
+    newBook.writeToFile(file);
 
     file.close();
 
@@ -169,18 +256,21 @@ void displayBooks()
     cout << "\n========== BOOK LIST ==========\n";
 
     while (getline(file, line))
-    {
-        Book book;
+{
+    if (line.empty())
+        continue;
 
-        book.loadFromString(line);
+    Book book;
 
-        book.displayBook();
-    }
+    book.loadFromString(line);
+
+    book.displayBook();
+}
 
     file.close();
 }
 
-void searchBook()
+void searchBookByID()
 {
     ifstream file("books.txt");
 
@@ -200,8 +290,11 @@ void searchBook()
     bool found = false;
 
     while (getline(file, line))
-    {
-        Book book;
+{
+    if (line.empty())
+        continue;
+
+    Book book;
 
         book.loadFromString(line);
 
@@ -225,6 +318,102 @@ void searchBook()
     }
 }
 
+void searchBookByTitle()
+{
+    ifstream file("books.txt");
+
+    if (!file)
+    {
+        cout << "\nNo books found.\n";
+        return;
+    }
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    string searchTitle;
+
+    cout << "\nEnter Book Title : ";
+    getline(cin, searchTitle);
+
+    string line;
+
+    bool found = false;
+
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
+
+        Book book;
+
+        book.loadFromString(line);
+
+        if (book.getTitle() == searchTitle)
+        {
+            cout << "\nBook Found!\n";
+
+            book.displayBook();
+
+            found = true;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "\nBook not found.\n";
+    }
+}
+
+void searchBookByAuthor()
+{
+    ifstream file("books.txt");
+
+    if (!file)
+    {
+        cout << "\nNo books found.\n";
+        return;
+    }
+
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    string searchAuthor;
+
+    cout << "\nEnter Author Name : ";
+    getline(cin, searchAuthor);
+
+    string line;
+
+    bool found = false;
+
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
+
+        Book book;
+
+        book.loadFromString(line);
+
+        if (book.getAuthor() == searchAuthor)
+        {
+            book.displayBook();
+
+            found = true;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "\nNo books found by that author.\n";
+    }
+}
+
+
+
 int main()
 {
     int choice;
@@ -237,35 +426,44 @@ int main()
 
         cout << "1. Add Book\n";
         cout << "2. Display Books\n";
-        cout << "3. Search Book\n";
-        cout << "4. Exit\n";
-
+        cout << "3. Search Book by ID\n";
+        cout << "4. Search Book by Title\n";
+        cout << "5. Search Book by Author\n";
+        cout << "6. Exit\n";
         cout << "\nEnter your choice : ";
         cin >> choice;
 
         switch (choice)
         {
         case 1:
-            addBook();
-            break;
+    addBook();
+    break;
 
-        case 2:
-            displayBooks();
-            break;
+case 2:
+    displayBooks();
+    break;
 
-        case 3:
-            searchBook();
-            break;
+case 3:
+    searchBookByID();
+    break;
 
-        case 4:
-            cout << "\nThank you!\n";
-            break;
+case 4:
+    searchBookByTitle();
+    break;
 
-        default:
-            cout << "\nInvalid choice!\n";
+case 5:
+    searchBookByAuthor();
+    break;
+
+case 6:
+    cout << "\nThank you!\n";
+    break;
+
+default:
+    cout << "\nInvalid choice!\n";
         }
 
-    } while (choice != 4);
+    } while (choice != 6);
 
     return 0;
 }

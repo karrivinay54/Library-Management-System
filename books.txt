@@ -1,2 +1,8 @@
-101|harry potter|j. k.rowling|fantasy|0
-101|the hobbit |j.r.r. martin|fanatsy|0
+101|Harry Potter|J. K. Rowling|Fantasy|0
+102|The Hobbit|J.R.R. Tolkien|Fantasy|0
+103|The Alchemist|Paulo Coelho|Novel|0
+104|Atomic Habits|James Clear|Self Help|0
+105|The Lord of the Rings|J.R.R. Tolkien|Fantasy|0
+100|lover|kk|drama|0
+99|jfsr|srfjk|frsbfjbrf|0
+999|lll|kk|vbnm|0
