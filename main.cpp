@@ -208,6 +208,31 @@ vector<Book> loadBooks()
     return books;
 }
 
+vector<Member> loadMembers()
+{
+    vector<Member> members;
+
+    ifstream file("members.txt");
+
+    string line;
+
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
+
+        Member member;
+
+        member.loadFromString(line);
+
+        members.push_back(member);
+    }
+
+    file.close();
+
+    return members;
+}
+
 void addBook()
 {
     vector<Book> books = loadBooks();
@@ -241,6 +266,39 @@ void addBook()
     cout << "\nBook Added Successfully!\n";
 }
 
+void addMember()
+{
+    vector<Member> members = loadMembers();
+
+    Member newMember;
+
+    newMember.inputMember();
+
+    // Check duplicate Member ID
+    for (const auto &member : members)
+    {
+        if (member.getMemberID() == newMember.getMemberID())
+        {
+            cout << "\nMember ID already exists!\n";
+            return;
+        }
+    }
+
+    ofstream file("members.txt", ios::app);
+
+    if (!file)
+    {
+        cout << "\nError opening members file!\n";
+        return;
+    }
+
+    newMember.writeToFile(file);
+
+    file.close();
+
+    cout << "\nMember Added Successfully!\n";
+}
+
 void displayBooks()
 {
     ifstream file("books.txt");
@@ -266,6 +324,35 @@ void displayBooks()
 
     book.displayBook();
 }
+
+    file.close();
+}
+
+void displayMembers()
+{
+    ifstream file("members.txt");
+
+    if (!file)
+    {
+        cout << "\nNo members found.\n";
+        return;
+    }
+
+    string line;
+
+    cout << "\n========== MEMBER LIST ==========\n";
+
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
+
+        Member member;
+
+        member.loadFromString(line);
+
+        member.displayMember();
+    }
 
     file.close();
 }
@@ -315,6 +402,54 @@ void searchBookByID()
     if (!found)
     {
         cout << "\nBook not found.\n";
+    }
+}
+
+void searchMember()
+{
+    ifstream file("members.txt");
+
+    if (!file)
+    {
+        cout << "\nNo members found.\n";
+        return;
+    }
+
+    int id;
+
+    cout << "\nEnter Member ID : ";
+    cin >> id;
+
+    string line;
+
+    bool found = false;
+
+    while (getline(file, line))
+    {
+        if (line.empty())
+            continue;
+
+        Member member;
+
+        member.loadFromString(line);
+
+        if (member.getMemberID() == id)
+        {
+            cout << "\nMember Found!\n";
+
+            member.displayMember();
+
+            found = true;
+
+            break;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "\nMember not found.\n";
     }
 }
 
@@ -429,41 +564,56 @@ int main()
         cout << "3. Search Book by ID\n";
         cout << "4. Search Book by Title\n";
         cout << "5. Search Book by Author\n";
-        cout << "6. Exit\n";
+        cout << "6. Add Member\n";
+        cout << "7. Display Members\n";
+        cout << "8. Search Member\n";
+        cout << "9. Exit\n";
         cout << "\nEnter your choice : ";
         cin >> choice;
 
-        switch (choice)
-        {
+switch(choice)
+{
         case 1:
-    addBook();
+        addBook();
     break;
-
-case 2:
-    displayBooks();
+    
+        case 2:
+        displayBooks();
     break;
-
-case 3:
-    searchBookByID();
+    
+        case 3:
+        searchBookByID();
     break;
-
-case 4:
-    searchBookByTitle();
+            
+        case 4:
+        searchBookByTitle();
     break;
-
-case 5:
-    searchBookByAuthor();
+    
+        case 5:
+        searchBookByAuthor();
     break;
-
-case 6:
-    cout << "\nThank you!\n";
+    
+        case 6:
+        addMember();
     break;
-
-default:
-    cout << "\nInvalid choice!\n";
+    
+        case 7:
+        displayMembers();
+    break;
+    
+        case 8:
+        searchMember();
+    break;
+    
+        case 9:
+        cout << "\nExiting the program. Goodbye!\n";
+    break;
+            
+        default:
+        cout << "\nInvalid choice! Please try again.\n";
+    break;
         }
-
-    } while (choice != 6);
+} while(choice != 9);
 
     return 0;
 }
