@@ -262,7 +262,7 @@ RGUKT IIIT Nuzvid
 
 💼 LinkedIn:
 
-https://www.linkedin.com/in/karri-vinay
+(https://www.linkedin.com/in/vinay-karri-53071b288/)
 
 ---
 
