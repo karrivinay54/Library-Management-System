@@ -528,6 +528,42 @@ void returnBook()
     }
 }
 
+void deleteBook()
+{
+    vector<Book> books = loadBooks();
+
+    int id;
+
+    cout << "\nEnter Book ID to Delete : ";
+    cin >> id;
+
+    bool found = false;
+
+    vector<Book> updatedBooks;
+
+    for (const auto &book : books)
+    {
+        if (book.getBookID() == id)
+        {
+            found = true;
+        }
+        else
+        {
+            updatedBooks.push_back(book);
+        }
+    }
+
+    if (!found)
+    {
+        cout << "\nBook not found!\n";
+        return;
+    }
+
+    saveBooks(updatedBooks);
+
+    cout << "\nBook Deleted Successfully!\n";
+}
+
 void searchMember()
 {
     ifstream file("members.txt");
@@ -692,7 +728,8 @@ int main()
         cout << "8. Search Member\n";
         cout << "9. issue book\n";
         cout << "10. Return Book\n";
-        cout << "11. Exit\n";
+        cout << "11. Delete Book\n";
+        cout << "12. Exit\n";
         cout << "\nEnter your choice : ";
         cin >> choice;
         if (cin.fail())
@@ -746,15 +783,19 @@ switch(choice)
     break;
 
         case 11:
-        cout << "\nExiting the program. Goodbye!\n";
+        deleteBook();
     break;
+     
+        case 12:
+        cout << "\nExiting the program. Goodbye!\n";    
+    break;   
 
             
         default:
         cout << "\nInvalid choice! Please try again.\n";
     break;
         }
-} while(choice != 11);
+} while(choice != 12);
 
     return 0;
 }
