@@ -8,9 +8,9 @@
 
 using namespace std;
 
-// ====================================
+// ===============================
 // Book Class
-// ====================================
+// ===============================
 
 class Book
 {
@@ -18,8 +18,8 @@ private:
     int bookID;
     string title;
     string author;
-    string publisher;
-    bool isIssued;
+    string category;
+    bool issued;
 
 public:
 
@@ -28,59 +28,244 @@ public:
         bookID = 0;
         title = "";
         author = "";
-        publisher = "";
-        isIssued = false;
+        category = "";
+        issued = false;
     }
 
-};
-
-// ====================================
-// Member Class
-// ====================================
-
-class Member
-{
-private:
-    int memberID;
-    string memberName;
-    string phone;
-
-public:
-
-    Member()
+    // Function to input book details
+    void inputBook()
     {
-        memberID = 0;
-        memberName = "";
-        phone = "";
+        cout << "\n========== ADD NEW BOOK ==========\n";
+
+        cout << "Enter Book ID : ";
+        cin >> bookID;
+
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        cout << "Enter Book Title : ";
+        getline(cin, title);
+
+        cout << "Enter Author Name : ";
+        getline(cin, author);
+
+        cout << "Enter Category : ";
+        getline(cin, category);
+
+        issued = false;
     }
+
+    // Function to display book details
+    void displayBook() const
+    {
+        cout << "\n----------------------------------------\n";
+        cout << "Book ID      : " << bookID << endl;
+        cout << "Title        : " << title << endl;
+        cout << "Author       : " << author << endl;
+        cout << "Category     : " << category << endl;
+        cout << "Status       : " << (issued ? "Issued" : "Available") << endl;
+        cout << "----------------------------------------\n";
+    }
+
+    // Save book to file
+void writeToFile(ofstream &file)
+{
+    file << bookID << "|"
+         << title << "|"
+         << author << "|"
+         << category << "|"
+         << issued << endl;
+}
+
+// Load book from file
+void loadFromString(const string &line)
+{
+    stringstream ss(line);
+    string temp;
+
+    getline(ss, temp, '|');
+    bookID = stoi(temp);
+
+    getline(ss, title, '|');
+
+    getline(ss, author, '|');
+
+    getline(ss, category, '|');
+
+    getline(ss, temp);
+    issued = stoi(temp);
+}
+
+// Getter
+int getBookID() const
+{
+    return bookID;
+}
+
+string getTitle() const
+{
+    return title;
+}
+
+string getAuthor() const
+{
+    return author;
+}
 
 };
 
-// ====================================
-// Book Functions
-// ====================================
+vector<Book> loadBooks()
+{
+    vector<Book> books;
 
+    ifstream file("books.txt");
 
+    string line;
 
-// ====================================
-// Member Functions
-// ====================================
+    while (getline(file, line))
+    {
+        Book book;
+        book.loadFromString(line);
+        books.push_back(book);
+    }
 
+    file.close();
 
+    return books;
+}
 
-// ====================================
-// Issue / Return Functions
-// ====================================
+void addBook()
+{
+    Book book;
 
+    book.inputBook();
 
+    ofstream file("books.txt", ios::app);
 
-// ====================================
-// Main
-// ====================================
+    if (!file)
+    {
+        cout << "\nError opening books file!\n";
+        return;
+    }
+
+    book.writeToFile(file);
+
+    file.close();
+
+    cout << "\nBook Added Successfully!\n";
+}
+
+void displayBooks()
+{
+    ifstream file("books.txt");
+
+    if (!file)
+    {
+        cout << "\nNo books found.\n";
+        return;
+    }
+
+    string line;
+
+    cout << "\n========== BOOK LIST ==========\n";
+
+    while (getline(file, line))
+    {
+        Book book;
+
+        book.loadFromString(line);
+
+        book.displayBook();
+    }
+
+    file.close();
+}
+
+void searchBook()
+{
+    ifstream file("books.txt");
+
+    if (!file)
+    {
+        cout << "\nNo books found.\n";
+        return;
+    }
+
+    int id;
+
+    cout << "\nEnter Book ID : ";
+    cin >> id;
+
+    string line;
+
+    bool found = false;
+
+    while (getline(file, line))
+    {
+        Book book;
+
+        book.loadFromString(line);
+
+        if (book.getBookID() == id)
+        {
+            cout << "\nBook Found!\n";
+
+            book.displayBook();
+
+            found = true;
+
+            break;
+        }
+    }
+
+    file.close();
+
+    if (!found)
+    {
+        cout << "\nBook not found.\n";
+    }
+}
 
 int main()
 {
-    cout << "Library Management System\n";
+    int choice;
+
+    do
+    {
+        cout << "\n=====================================\n";
+        cout << "     LIBRARY MANAGEMENT SYSTEM\n";
+        cout << "=====================================\n";
+
+        cout << "1. Add Book\n";
+        cout << "2. Display Books\n";
+        cout << "3. Search Book\n";
+        cout << "4. Exit\n";
+
+        cout << "\nEnter your choice : ";
+        cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            addBook();
+            break;
+
+        case 2:
+            displayBooks();
+            break;
+
+        case 3:
+            searchBook();
+            break;
+
+        case 4:
+            cout << "\nThank you!\n";
+            break;
+
+        default:
+            cout << "\nInvalid choice!\n";
+        }
+
+    } while (choice != 4);
 
     return 0;
 }
