@@ -1,15 +1,15 @@
 # Compiled executables
-*.exe
-*.out
-*.o
-*.obj
+.exe
+.out
+.o
+.obj
 
 # VS Code
-.vscode/
+.vscode
 
 # Temporary files
-*.log
-*.tmp
+.log
+.tmp
 
 # Generated data
 books.txt
