@@ -1,21 +1,4 @@
-# Compiled executables
 *.exe
-*.out
 *.o
 *.obj
-
-# VS Code
-.vscode/
-
-# Temporary files
-*.log
-*.tmp
-
-# Generated data
-books.txt
-members.txt
-issued_books.txt
-
-# OS files
-Thumbs.db
-.DS_Store
+*.out
