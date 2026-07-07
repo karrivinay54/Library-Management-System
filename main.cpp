@@ -114,6 +114,17 @@ string getAuthor() const
     return author;
 }
 
+bool isIssued() const
+{
+    return issued;
+}
+
+void setIssued(bool status)
+{
+    issued = status;
+}
+
+
 };
 
 class Member
@@ -233,6 +244,19 @@ vector<Member> loadMembers()
     return members;
 }
 
+bool memberExists(int memberID)
+{
+    vector<Member> members = loadMembers();
+
+    for (auto &member : members)
+    {
+        if (member.getMemberID() == memberID)
+            return true;
+    }
+
+    return false;
+}
+
 void addBook()
 {
     vector<Book> books = loadBooks();
@@ -328,6 +352,18 @@ void displayBooks()
     file.close();
 }
 
+void saveBooks(vector<Book> &books)
+{
+    ofstream file("books.txt");
+
+    for (auto &book : books)
+    {
+        book.writeToFile(file);
+    }
+
+    file.close();
+}
+
 void displayMembers()
 {
     ifstream file("members.txt");
@@ -402,6 +438,93 @@ void searchBookByID()
     if (!found)
     {
         cout << "\nBook not found.\n";
+    }
+}
+
+void issueBook()
+{
+    vector<Book> books = loadBooks();
+
+    int bookID, memberID;
+
+    cout << "\nEnter Book ID : ";
+    cin >> bookID;
+
+    cout << "Enter Member ID : ";
+    cin >> memberID;
+
+    if (!memberExists(memberID))
+    {
+        cout << "\nMember not found!\n";
+        return;
+    }
+
+    bool found = false;
+
+    for (auto &book : books)
+    {
+        if (book.getBookID() == bookID)
+        {
+            found = true;
+
+            if (book.isIssued())
+            {
+                cout << "\nBook is already issued!\n";
+                return;
+            }
+
+            book.setIssued(true);
+
+            saveBooks(books);
+
+            cout << "\nBook Issued Successfully!\n";
+
+            return;
+        }
+    }
+
+    if (!found)
+    {
+        cout << "\nBook not found!\n";
+    }
+}
+
+void returnBook()
+{
+    vector<Book> books = loadBooks();
+
+    int bookID;
+
+    cout << "\nEnter Book ID : ";
+    cin >> bookID;
+
+    bool found = false;
+
+    for (auto &book : books)
+    {
+        if (book.getBookID() == bookID)
+        {
+            found = true;
+
+            if (!book.isIssued())
+            {
+                cout << "\nBook is already available!\n";
+                return;
+            }
+
+            book.setIssued(false);
+
+            saveBooks(books);
+
+            cout << "\nBook Returned Successfully!\n";
+
+            return;
+        }
+    }
+
+    if (!found)
+    {
+        cout << "\nBook not found!\n";
     }
 }
 
@@ -567,9 +690,18 @@ int main()
         cout << "6. Add Member\n";
         cout << "7. Display Members\n";
         cout << "8. Search Member\n";
-        cout << "9. Exit\n";
+        cout << "9. issue book\n";
+        cout << "10. Return Book\n";
+        cout << "11. Exit\n";
         cout << "\nEnter your choice : ";
         cin >> choice;
+        if (cin.fail())
+{
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cout << "\nInvalid input!\n";
+    continue;
+}
 
 switch(choice)
 {
@@ -606,14 +738,23 @@ switch(choice)
     break;
     
         case 9:
+        issueBook();
+    break;
+
+        case 10:
+        returnBook();
+    break;
+
+        case 11:
         cout << "\nExiting the program. Goodbye!\n";
     break;
+
             
         default:
         cout << "\nInvalid choice! Please try again.\n";
     break;
         }
-} while(choice != 9);
+} while(choice != 11);
 
     return 0;
 }
